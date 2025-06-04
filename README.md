@@ -195,56 +195,38 @@ GRANT USAGE ON SEQUENCE users_id_seq TO app_user;
 
 ## Troubleshooting
 
-### 1. Common Connection Issues
+###  Common Connection Issues
 
-#### A. "Connection Refused" Error
-In case you’re using pgAdmin to connect to your Supabase database and you get a ‘Connection Refused’ error, here’s what you can do:
+####  "unable to connect to server" Error
+In case you’re using pgAdmin to connect to your Supabase database and you get such an error, here’s what you can do:
 
 **Possible causes and solutions:**
 - Verify that you’ve entered the correct host address and port number (Supabase typically uses port 5432).
-- Check internet connectivity to ensure you're online.
-- Ensure Supabase project is active (not paused or deleted).
-- Verify firewall settings —it may be blocking the connection.
-
-#### B. "Authentication Failed" Error
-If you enter your credentials and get an ‘Authentication Failed’ error when connecting through pgAdmin:
-
-**Solutions:**
-
 - Double-check your database username and password in the Supabase dashboard.
-- Ensure password doesn't contain special characters (like %, &, or #) that need escaping
-- If unsure, try resetting the database password in Supabase dashboard and try again.
-
-#### C. SSL Connection Issues
-If pgAdmin shows an error about SSL when connecting to Supabase:
-
-**Solutions:**
-
+- Ensure password doesn't contain special characters (like %, &, or #) that need escaping.
 - Ensure SSL mode in pgAdmin is set to "Require".
 - Clear out any SSL certificate fields in pgAdmin -Supabase handles that automatically.
+- Check internet connectivity to ensure you're online.
+- Ensure Supabase project is active (not paused or deleted).
 - Check if your network is blocking SSL connections.
+- Verify firewall settings —it may be blocking the connection.
 
 ### 2. Performance Issues
 
-#### A. Slow Query Performance
-If your queries are taking too long to run, use the query below in your Supabase SQL Editor to check which queries are slow:
+#### Too Many Open Connections
+If your pgAdmin opens too many database connections without closing them, this can overload Supabase and lead to performance problems.
 
-**Diagnosis:**
+**Example:**
+- In pgAdmin, if you try connecting to the same Supabase database multiple times
+- Eventually, Supabase might reject new connections or slow down, showing errors like:
+    *Too many connections*
+    *Remaining connection slots are reserved for non-replication superuser connections*
 
-```sql
--- Check slow queries
-SELECT query, calls, total_time, mean_time
-FROM pg_stat_statements
-ORDER BY mean_time DESC
-LIMIT 10;
-```
+**Explanation:**
+- Supabase (and PostgreSQL) have a limit on active connections.
+- Leaving connections open (e.g., in apps or tools like pgAdmin) uses resources.
+- Always close unused connections or use connection pooling.
 
-**Solutions:**
-
-- Add appropriate indexes on columns that are frequently queried.
-- Try to simplify or restructure complex queries.
-- Consider connection pooling for high-traffic apps.
-- Monitor database metrics in Supabase dashboard -Database tab for slow operations.
 
 ## 3. Best Practices
 
